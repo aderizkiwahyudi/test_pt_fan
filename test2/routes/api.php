@@ -24,7 +24,7 @@ Route::post('login', LoginController::class)->name('login.process');
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('profile', UserController::class)->name('profile');
 
-    Route::prefix('epresence')->group(function(){
+    Route::prefix('epresences')->group(function(){
         Route::get('/', [EpresenceController::class, 'index'])->name('epresance.index');
         Route::post('store', [EpresenceController::class, 'store'])->name('epresance.store');
         Route::post('approve/{id}', [EpresenceController::class, 'approve'])->name('epresance.update');

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->bigInteger('user_id')->unsigned()->nullable();
             $table->string('type', 3);
             $table->string('is_approve', 5)->default(false);
-            $table->timestamps();
+            $table->timestamp('waktu');
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->nullOnDelete();
         });

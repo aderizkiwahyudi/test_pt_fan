@@ -16,11 +16,32 @@ class EpresenceController extends Controller
         Get data presences
         Keterangan:
         1. Menampilkan data absen users yang login
+
+        endpoint : http://127.0.0.1:8000/api/epresences/store
+        method : Get
     */
 
-    public function index(Request $request)
+    public function index(Request $request, Epresence $epresence)
     {
-        return new EpresenceResource($request->user());
+        $user_epresences = $epresence->where('user_id', $request->user()->id)->where('type', 'in')->get();
+        $user_epresences_temp = [];
+
+        $new_epresences = [];
+
+        foreach($user_epresences as $user_epresence){
+            $user_epresence_out = $epresence->where('user_id', $request->user()->id)->whereDate('waktu', $user_epresence->waktu)->where('type', 'out')->first();
+            $new_epresences += [
+                'id_user' => $user_epresence->user_id,
+                'nama_user' => $user_epresence->user->name,
+                'tanggal' => date('Y-m-d', strtotime($user_epresence->waktu)),
+                'waktu_masuk' => date('Y-m-d', strtotime($user_epresence->waktu)),
+                'waktu_keluar' => date('Y-m-d', strtotime($user_epresence_out->waktu)),
+                'status_masuk' => $user_epresence->is_approve ? 'APPROVE' : 'REJECT',
+                'status_pulang' => $user_epresence_out->is_approve ? 'APPROVE' : 'REJECT',
+            ];
+        }
+        
+        return new EpresenceResource($new_epresences);
     }
 
     /*
@@ -30,9 +51,11 @@ class EpresenceController extends Controller
         2. User belum melakukan absen keluar hari ini.
         3. User tidak bisa melakukan absen keluar sebelum absen masuk.
 
-        endpoint : http://127.0.0.1:8000/api/epresence/store
+        endpoint : http://127.0.0.1:8000/api/epresences/store
+        method : Post
         raw : {
             "type" : in atau out
+            "waktu" : 2022-12-23 08:00:00
         }
     */
 
@@ -40,7 +63,7 @@ class EpresenceController extends Controller
     {
         $epresence_data = $epresence->where('user_id', $request->user()->id)
                                     ->where('type', $request->type)
-                                    ->whereDate('created_at', date('Y-m-d'))
+                                    ->whereDate('waktu', date('Y-m-d'))
                                     ->first();
 
         if($epresence_data){
@@ -50,7 +73,7 @@ class EpresenceController extends Controller
         }
 
         if($request->type == 'out'){
-            if(!$epresence->where('user_id', $request->user()->id)->where('type', 'in')->whereDate('created_at', date('Y-m-d'))->first()){
+            if(!$epresence->where('user_id', $request->user()->id)->where('type', 'in')->whereDate('waktu', date('Y-m-d'))->first()){
                 return response()->json([
                     'message' => "you haven't done a check-in yet",
                 ]);
@@ -70,7 +93,8 @@ class EpresenceController extends Controller
         1. User adalah Suvervisour
         2. User (Pengaju) dibawah Suvervisour
 
-        endpoint : http://127.0.0.1:8000/api/epresence/approve/:epresence_id
+        endpoint : http://127.0.0.1:8000/api/epresences/approve/:epresence_id
+        method : Post
         raw : {
             "is_approve" : true atau false
         }

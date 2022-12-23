@@ -9,10 +9,13 @@ class Epresence extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'user_id',
         'type',
         'is_approve',
+        'waktu',
     ];
 
     protected function user()

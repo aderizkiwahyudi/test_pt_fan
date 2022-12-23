@@ -25,6 +25,8 @@ class User extends Authenticatable
         'npp_supervisor',
     ];
 
+    public $timestamps = false;
+
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -16,7 +16,7 @@ class EpresenceResource extends JsonResource
     {
         return [
             'message' => "Success get data",
-            "data" => EpresenceUserResource::collection($this->epresence)
+            "data" => parent::toArray($request),
         ];
     }
 }

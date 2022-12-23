@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('npp');
             $table->string('npp_supervisor');
             $table->string('password');
-            $table->timestamps();
         });
     }
 

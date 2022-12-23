@@ -26,7 +26,8 @@ class EpresenceStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'type' => 'required|in:in,out',
+            'type' => 'required|in:in,out,IN,OUT',
+            'waktu' => 'required|date_format:Y-m-d H:i:s'
         ];
     }
 
@@ -35,6 +36,8 @@ class EpresenceStoreRequest extends FormRequest
         return [
             'type.required' => 'keterangan tidak boleh kosong',
             'type.in' => 'keterangan yang anda masukan tidak valid',
+            'waktu.required' => 'Waktu tidak boleh kosong',
+            'waktu.date_format' => 'Format waktu salah',
         ];
     }
 
