@@ -24,22 +24,22 @@ class EpresenceController extends Controller
     public function index(Request $request, Epresence $epresence)
     {
         $user_epresences = $epresence->where('user_id', $request->user()->id)->where('type', 'in')->get();
-        $user_epresences_temp = [];
-
         $new_epresences = [];
 
         foreach($user_epresences as $user_epresence){
             $user_epresence_out = $epresence->where('user_id', $request->user()->id)->whereDate('waktu', $user_epresence->waktu)->where('type', 'out')->first();
-            $new_epresences += [
+            array_push($new_epresences,[
                 'id_user' => $user_epresence->user_id,
                 'nama_user' => $user_epresence->user->name,
                 'tanggal' => date('Y-m-d', strtotime($user_epresence->waktu)),
-                'waktu_masuk' => date('Y-m-d', strtotime($user_epresence->waktu)),
-                'waktu_keluar' => date('Y-m-d', strtotime($user_epresence_out->waktu)),
+                'waktu_masuk' => date('H:i:s', strtotime($user_epresence->waktu)),
+                'waktu_keluar' => date('H:i:s', strtotime($user_epresence_out->waktu)),
                 'status_masuk' => $user_epresence->is_approve ? 'APPROVE' : 'REJECT',
                 'status_pulang' => $user_epresence_out->is_approve ? 'APPROVE' : 'REJECT',
-            ];
+            ]);
         }
+
+        return response()->json($new_epresences);
         
         return new EpresenceResource($new_epresences);
     }
