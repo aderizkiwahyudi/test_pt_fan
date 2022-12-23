@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\EpresenceController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\UnauthorizationController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +18,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::get('login', UnauthorizationController::class)->name('login');
+Route::post('login', LoginController::class)->name('login.process');
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('profile', UserController::class)->name('profile');
+
+    Route::prefix('epresence')->group(function(){
+        Route::get('/', [EpresenceController::class, 'index'])->name('epresance.index');
+        Route::post('store', [EpresenceController::class, 'store'])->name('epresance.store');
+        Route::post('approve/{id}', [EpresenceController::class, 'approve'])->name('epresance.update');
+    });
 });
